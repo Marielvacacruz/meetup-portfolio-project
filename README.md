@@ -49,8 +49,8 @@ Returns the information about the current user that is logged in.
 
 * Require Authentication: true
 * Request
-  * Method: ?
-  * URL: ?
+  * Method: GET
+  * URL: /users/:userId
   * Body: none
 
 * Successful Response
@@ -75,8 +75,8 @@ information.
 
 * Require Authentication: false
 * Request
-  * Method: ?
-  * URL: ?
+  * Method: POST
+  * URL: /login
   * Headers:
     * Content-Type: application/json
   * Body:
@@ -141,8 +141,8 @@ user's information.
 
 * Require Authentication: false
 * Request
-  * Method: ?
-  * URL: ?
+  * Method: POST
+  * URL: /users
   * Headers:
     * Content-Type: application/json
   * Body:
@@ -212,8 +212,8 @@ Returns all the groups.
 
 * Require Authentication: false
 * Request
-  * Method: ?
-  * URL: ?
+  * Method: GET
+  * URL: /groups
   * Body: none
 
 * Successful Response
@@ -249,8 +249,8 @@ Returns all the groups.
 
 * Require Authentication: true
 * Request
-  * Method: ?
-  * URL: ?
+  * Method: GET
+  * URL: /groups/:userId
   * Body: none
 
 * Successful Response
@@ -286,8 +286,8 @@ Returns the details of a group specified by its id.
 
 * Require Authentication: false
 * Request
-  * Method: ?
-  * URL: ?
+  * Method: GET
+  * URL: /groups/:id
   * Body: none
 
 * Successful Response
@@ -339,7 +339,7 @@ Creates and returns a new group.
 
 * Require Authentication: true
 * Request
-  * Method: ?
+  * Method: POST
   * URL: ?
   * Headers:
     * Content-Type: application/json
@@ -373,7 +373,7 @@ Creates and returns a new group.
       "city": "New York",
       "state": "NY",
       "createdAt": "2021-11-19 20:39:36",
-      "updatedAt": "2021-11-19 20:39:36" 
+      "updatedAt": "2021-11-19 20:39:36"
     }
     ```
 
@@ -405,7 +405,7 @@ Updates and returns an existing group.
 * Require Authentication: true
 * Require proper authorization: Group must belong to the current user
 * Request
-  * Method: ?
+  * Method: PUT/
   * URL: ?
   * Headers:
     * Content-Type: application/json
@@ -439,7 +439,7 @@ Updates and returns an existing group.
       "city": "New York",
       "state": "NY",
       "createdAt": "2021-11-19 20:39:36",
-      "updatedAt": "2021-11-20 10:06:40" 
+      "updatedAt": "2021-11-20 10:06:40"
     }
     ```
 
@@ -497,7 +497,7 @@ Deletes an existing group.
     ```json
     {
       "message": "Successfully deleted",
-      "statusCode": 200 
+      "statusCode": 200
     }
     ```
 
@@ -1428,8 +1428,8 @@ Returns the attendees of an event specified by its id.
     }
     ```
 
-* Successful Response: If you ARE NOT the organizer of the group or a member of 
-  the group with a status of "co-host". Shows all members that don't have a 
+* Successful Response: If you ARE NOT the organizer of the group or a member of
+  the group with a status of "co-host". Shows all members that don't have a
   status of "pending".
   * Status Code: 200
   * Headers:
