@@ -249,7 +249,7 @@ Returns all the groups.
 * Require Authentication: true
 * Request
   * Method: GET
-  * URL: /groups/:userId
+  * URL: /users/:userId/groups
   * Body: none
 
 * Successful Response
@@ -405,7 +405,7 @@ Updates and returns an existing group.
 * Require proper authorization: Group must belong to the current user
 * Request
   * Method: PUT/PATCH
-  * URL: /group/:id
+  * URL: /groups/:id
   * Headers:
     * Content-Type: application/json
   * Body:
@@ -520,7 +520,7 @@ Returns the members of a group specified by its id.
 * Require Authentication: false
 * Request
   * Method: GET
-  * URL: /members/groupId
+  * URL: /groups/:id/members
   * Body: none
 
 * Successful Response: If you ARE the organizer of the group. Shows all
