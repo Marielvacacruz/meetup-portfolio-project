@@ -141,7 +141,7 @@ user's information.
 * Require Authentication: false
 * Request
   * Method: POST
-  * URL: /users
+  * URL: /signup
   * Headers:
     * Content-Type: application/json
   * Body:
@@ -679,7 +679,7 @@ Change the status of a membership for a group specified by id.
   have a membership to the group with the status of "co-host"
 * Request
   * Method: PUT/PATCH
-  * URL: /members/:membersId
+  * URL: /members/:memberId
   * Headers:
     * Content-Type: application/json
   * Body:
