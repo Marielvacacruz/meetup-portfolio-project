@@ -5,12 +5,19 @@ const cors = require('cors');
 const csurf = require('csurf');
 const helmet = require('helmet');
 const cookieParser = require('cookie-parser');
-const { environment } = require('./config');
 
+const routes = require('./routes');
+
+const { environment } = require('./config');
 const isProduction = environment === 'production';
 
+//initialize the app
 const app = express();
+
+//logging
 app.use(morgan('dev'));
+
+//parsing
 app.use(cookieParser());
 app.use(express.json());
 
@@ -41,3 +48,7 @@ app.use(
         }
     })
 );
+
+app.use(routes);
+
+module.exports = app;
