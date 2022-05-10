@@ -1,7 +1,7 @@
 # meetup-portfolio-project
 
 ## Database Schema Design
-![alt text](./images/schema3.png)
+![alt text](./images/schema.png)
 
 ## API Documentation
 
@@ -49,7 +49,7 @@ Returns the information about the current user that is logged in.
 * Require Authentication: true
 * Request
   * Method: GET
-  * URL: /users/:userId
+  * URL: /users/current
   * Body: none
 
 * Successful Response
@@ -249,7 +249,7 @@ Returns all the groups.
 * Require Authentication: true
 * Request
   * Method: GET
-  * URL: /users/:userId/groups
+  * URL: /users/current/groups
   * Body: none
 
 * Successful Response
@@ -286,7 +286,7 @@ Returns the details of a group specified by its id.
 * Require Authentication: false
 * Request
   * Method: GET
-  * URL: /groups/:id
+  * URL: /groups/:groupId
   * Body: none
 
 * Successful Response
@@ -404,8 +404,8 @@ Updates and returns an existing group.
 * Require Authentication: true
 * Require proper authorization: Group must belong to the current user
 * Request
-  * Method: PUT/PATCH
-  * URL: /groups/:id
+  * Method: PUT
+  * URL: /groups/:groupId
   * Headers:
     * Content-Type: application/json
   * Body:
@@ -484,7 +484,7 @@ Deletes an existing group.
 * Require proper authorization: Group must belong to the current user
 * Request
   * Method: DELETE
-  * URL: /groups/:id
+  * URL: /groups/:groupId
   * Body: none
 
 * Successful Response
@@ -520,7 +520,7 @@ Returns the members of a group specified by its id.
 * Require Authentication: false
 * Request
   * Method: GET
-  * URL: /groups/:id/members
+  * URL: /groups/:groupId/members
   * Body: none
 
 * Successful Response: If you ARE the organizer of the group. Shows all
@@ -611,7 +611,7 @@ Request a new membership for a group specified by id.
 * Require Authentication: true
 * Request
   * Method: POST
-  * URL: /groups/:id
+  * URL: /groups/:groupId
   * Headers:
     * Content-Type: application/json
   * Body: none
@@ -678,8 +678,8 @@ Change the status of a membership for a group specified by id.
 * Require proper authorization: Current User must already be the organizer or
   have a membership to the group with the status of "co-host"
 * Request
-  * Method: PUT/PATCH
-  * URL: /members/:memberId
+  * Method: PUT
+  * URL: /group/groupId
   * Headers:
     * Content-Type: application/json
   * Body:
@@ -782,7 +782,7 @@ Delete a membership to a group specified by id.
   the user whose membership is being deleted
 * Request
   * Method: DELETE
-  * URL: /members/:memberId
+  * URL: current/groups/:groupId
   * Headers:
     * Content-Type: application/json
   * Body: none
@@ -954,7 +954,7 @@ Returns the details of an event specified by its id.
 * Require Authentication: false
 * Request
   * Method: GET
-  * URL: /events/:id
+  * URL: /events/:eventId
   * Body: none
 
 * Successful Response
@@ -1093,8 +1093,8 @@ Edit a new venue specified by its id
 * Require Authentication: Current User must be the organizer of the group or a member of
   the group with a status of "co-host"
 * Request
-  * Method: PUT/PATCH
-  * URL: /venues/:id
+  * Method: PUT
+  * URL: /venues/:venueId
   * Headers:
     * Content-Type: application/json
   * Body:
@@ -1252,8 +1252,8 @@ Edit and returns an event specified by its id
 * Require Authorization: Current User must be the organizer of the group or a member of
   the group with a status of "co-host"
 * Request
-  * Method: PUT/PATCH
-  * URL: /events/:id
+  * Method: PUT
+  * URL: /events/:eventId
   * Headers:
     * Content-Type: application/json
   * Body:
@@ -1350,7 +1350,7 @@ Delete an event specified by its id
   the group with a status of "co-host"
 * Request
   * Method: DELETE
-  * URL: /events/:id
+  * URL: /events/:eventId
   * Body: none
 
 * Successful Response
@@ -1546,8 +1546,8 @@ Change the status of an attendance for an event specified by id.
 * Require proper authorization: Current User must already be the organizer or
   have a membership to the group with the status of "co-host"
 * Request
-  * Method: PUT/PATCH
-  * URL: /attendees/:userId
+  * Method: PUT
+  * URL: /current/events/:eventId
   * Headers:
     * Content-Type: application/json
   * Body:
@@ -1622,7 +1622,7 @@ Delete an attendance to an event specified by id.
   the user whose attendance is being deleted
 * Request
   * Method: DELETE
-  * URL: /attendees/:eventId/:userId
+  * URL: current/events/:eventId
   * Headers:
     * Content-Type: application/json
   * Body: none
@@ -1755,7 +1755,7 @@ Delete an existing image.
   the image's imageableId and imageableType
 * Request
   * Method: DELETE
-  * URL: /images/:imageableId
+  * URL: /images/:imageId
   * Body: none
 
 * Successful Response
