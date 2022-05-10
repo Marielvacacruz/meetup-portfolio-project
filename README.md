@@ -880,7 +880,7 @@ Returns all the events of a group specified by its id
 * Require Authentication: false
 * Request
   * Method: GET
-  * URL: events/:groupId
+  * URL: /groups/:groupId/events
   * Body: none
 
 * Successful Response
