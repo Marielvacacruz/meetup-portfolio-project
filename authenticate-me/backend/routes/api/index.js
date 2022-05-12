@@ -1,8 +1,15 @@
 const  router = require('express').Router();
-//test
-// router.post('/test', function(req, res){
-//     res.json({requestBody: req.body});
-// });
+const sessionRouter = require('./session');
+const usersRouter = require('./users');
+
+router.use('/session', sessionRouter);
+router.use('/users', usersRouter);
+
+router.post('/test', (req, res) => {
+    res.json({ requestBody: req.body });
+});
+
+
 
 
 module.exports = router;
