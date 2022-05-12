@@ -1,7 +1,6 @@
 const express = require('express');
 const  { setTokenCookie, restoreUser } = require('../../utils/auth');
 const { User } = require('../../db/models');
-const { UnknownConstraintError } = require('sequelize/types');
 
 const router = express.Router();
 
