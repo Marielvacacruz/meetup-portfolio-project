@@ -1,8 +1,17 @@
 const express = require('express');
 const router = express.Router();
-const apiRouter = require('./api');
+const loginRouter = require('./login');
+const usersRouter = require('./users');
 
-router.use('/api', apiRouter);
+router.use('/login', loginRouter);
+router.use('/users', usersRouter);
+
+
+//test route
+router.post('/test', (req, res) => {
+    res.json({ requestBody: req.body });
+});
+
 
 //test route
 // router.get('/hello/world', function(req, res) {

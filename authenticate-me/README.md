@@ -1,7 +1,7 @@
 # meetup-portfolio-project
 
 ## Database Schema Design
-![alt text](./images/schema.png)
+![alt text](./images/schema1.png)
 
 ## API Documentation
 
