@@ -9,11 +9,19 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       groupId: {
-        allowNull: false,
+        references: {
+          model: 'Groups',
+          key: 'id'
+        },
+        onDelete: 'cascade',
         type: Sequelize.INTEGER
       },
       eventId: {
-        allowNull: false,
+        references: {
+          mode: 'Events',
+          key: 'id'
+        },
+        onDelete: 'cascade',
         type: Sequelize.INTEGER
       },
       imageableType: {

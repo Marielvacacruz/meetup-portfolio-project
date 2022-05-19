@@ -9,11 +9,20 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       venueId: {
-        allowNull: false,
+        references: {
+          model: 'Venues',
+          key: 'id'
+        },
+        // onDelete: 'cascade', <-- is this needed?
         type: Sequelize.INTEGER
       },
       groupId: {
         allowNull: false,
+        references: {
+          model: 'Groups',
+          key: 'id'
+        },
+        onDelete: 'cascade',
         type: Sequelize.INTEGER
       },
       name: {
