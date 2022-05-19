@@ -10,6 +10,11 @@ module.exports = {
       },
       organizerId: {
         allowNull: false,
+        references: {
+          model: 'Users',
+          key: 'id'
+        },
+        onDelete: 'cascade',
         type: Sequelize.INTEGER
       },
       name: {
