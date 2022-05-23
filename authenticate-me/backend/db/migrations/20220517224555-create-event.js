@@ -13,7 +13,6 @@ module.exports = {
           model: 'Venues',
           key: 'id'
         },
-        // onDelete: 'cascade', <-- is this needed?
         type: Sequelize.INTEGER
       },
       groupId: {
