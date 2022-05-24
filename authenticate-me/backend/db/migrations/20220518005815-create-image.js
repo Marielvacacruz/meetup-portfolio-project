@@ -18,7 +18,7 @@ module.exports = {
       },
       eventId: {
         references: {
-          mode: 'Events',
+          model: 'Events',
           key: 'id'
         },
         onDelete: 'cascade',
