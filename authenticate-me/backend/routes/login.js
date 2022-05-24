@@ -37,7 +37,7 @@ router.post('/', validateLogin, async (req, res,  next) => {
     const { token } = req.cookies;
 
     return res.json({
-        ...user.dataValues,
+        ...user.toSafeObject(),
         token
     });
 });
