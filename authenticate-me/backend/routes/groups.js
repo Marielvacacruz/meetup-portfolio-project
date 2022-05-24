@@ -1,6 +1,6 @@
 const express = require('express');
 const { requireAuth } = require('../utils/auth');
-const { Group, Member, User } = require('../db/models');
+const { Group, Member, User, Image, sequelize } = require('../db/models');
 
 
 const router = express.Router();
@@ -10,12 +10,20 @@ router.get('/', async (req, res) => {
     const groups = await Group.findAll({
         include: [
             {
-                model: User
-            }
-         ]
+                model: Member,
+                attributes: [ ]
+            },
+         ],
+         attributes: {
+             include: [
+                 [
+                    sequelize.fn('COUNT', sequelize.col('Members.groupId')), 'numMembers'
+             ]
+            ]
+         }
     });
     res.json({
-        groups,
+        groups
     });
 });
 //still need to figure out how to include

@@ -2,9 +2,11 @@ const express = require('express');
 const router = express.Router();
 const loginRouter = require('./login');
 const usersRouter = require('./users');
+const groupsRouter = require('./groups');
 
 router.use('/login', loginRouter);
 router.use('/users', usersRouter);
+router.use('/groups', groupsRouter);
 
 
 //test route
