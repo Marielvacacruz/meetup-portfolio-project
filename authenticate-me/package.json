@@ -22,6 +22,5 @@
   },
   "homepage": "https://github.com/Marielvacacruz/meetup-portfolio-project#readme",
   "dependencies": {
-    "pg": "^8.7.3"
   }
 }
