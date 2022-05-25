@@ -1,15 +1,54 @@
 const express = require('express');
 const { requireAuth } = require('../utils/auth');
+const { check } = require('express-validator');
+const { handleValidationErrors } = require('../utils/validation');
 const { Group, Member, User, Image, sequelize } = require('../db/models');
 
 
 const router = express.Router();
 
+//middleware to validate new Group
+const validateNewGroup = [
+    check('name')
+      .exists({ checkFalsy: true })
+      .withMessage('Name is required')
+      .isLength({ max: 60 })
+      .withMessage('Name must be 60 characters or less.'),
+    check('about')
+      .exists({ checkFalsy: true })
+      .withMessage('About is required')
+      .isLength({ min: 50 })
+      .withMessage('About must be 50 characters or more'),
+    check('type')
+      .exists({ checkFalsy: true })
+      .withMessage('Must choose a type')
+      .isIn(['Online', 'In-person'])
+      .withMessage('Type must be Online or In-person'),
+    check('private')
+        .exists({checkFalsy: true })
+        .withMessage('Must select')
+        .isBoolean()
+        .withMessage('Must choose option'),
+    check('city')
+        .exists({ checkFalsy: true })
+        .withMessage('City is required'),
+    check('state')
+        .exists({ checkFalsy: true })
+        .withMessage('State is required'),
+    handleValidationErrors
+];
+
 //Get Details of a Group from an id
 router.get('/:groupId', async(req, res) => {
-    const { groupId } = req.params;
+    let { groupId } = req.params;
+    groupId = parseInt(groupId);
 
-    const currentGroup = await Group.findByPk(groupId, {
+    const images = await Image.findAll({
+        where: {groupId},
+        attributes: ['url']
+    })
+
+    const currentGroup = await Group.findByPk( groupId, {
         include: [
             {
                 model: Image,
@@ -20,29 +59,30 @@ router.get('/:groupId', async(req, res) => {
                 attributes: []
             },
             {
-                model:User //can't figure out how to alias as 'Organizer'
+                model:User, as:'Organizer'
             }
 
             ],
             attributes: {
                 include: [
                     [sequelize.fn("COUNT", sequelize.col("Members.id")), "numMembers"],
-                    [sequelize.col('Images.url'), 'images'] //forcing this format
                 ]
             }
         }
 
     );
-
-    if(!currentGroup){
+        console.log(currentGroup)
+    if(currentGroup.id === null){
         let err = new Error('Group Could not be found');
         err.status = 404
         throw err;
     }
+    const imageurls = images.map(image => image.url);
+    const response = {...currentGroup.toJSON(), images: imageurls}
 
-    res.json({
-        currentGroup
-    });
+    res.json(
+        response
+    );
 
 });
 
@@ -62,22 +102,13 @@ router.get("/", async (req, res) => {
             attributes: []
         }
       ],
-      attributes:
+      attributes:{
 
-        [
-          'id',
-          'organizerId',
-          "name",
-          "about",
-          "type",
-          "private",
-          "city",
-          "state",
-          "createdAt",
-          "updatedAt",
+     include:  [
           [sequelize.fn("COUNT", sequelize.col("Members.id")), "numMembers"],
           [sequelize.col('Images.url'), 'previewImage']
-        ],
+        ]
+    },
       group: ["Group.id"]
     });
     res.json({
@@ -85,6 +116,28 @@ router.get("/", async (req, res) => {
     });
   });
 
+//Create a new Group
+router.post('/', requireAuth, validateNewGroup, async (req, res) => {
+    const { name, about, type, private, city, state }= req.body;
+    const { user } = req; //grab user information
+
+    //create new group
+
+  const newGroup = await Group.create({
+      organizerId: user.id,
+      name,
+      about,
+      type,
+      private,
+      city,
+      state
+  });
+
+  return res.json(
+      newGroup
+  );
+
+});
 
 
 
