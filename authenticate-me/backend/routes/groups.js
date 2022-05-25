@@ -39,8 +39,6 @@ router.get("/", async (req, res) => {
       groups,
     });
   });
-//still need to figure out how to include
-//numMembers and previewImage * aggregate data?
 
 
 
