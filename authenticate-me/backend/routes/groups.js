@@ -6,26 +6,39 @@ const { Group, Member, User, Image, sequelize } = require('../db/models');
 const router = express.Router();
 
 //Get all Groups
-router.get('/', async (req, res) => {
+router.get("/", async (req, res) => {
     const groups = await Group.findAll({
-        include: [
-            {
-                model: Member,
-                attributes: [ ]
-            },
-         ],
-         attributes: {
-             include: [
-                 [
-                    sequelize.fn('COUNT', sequelize.col('Members.groupId')), 'numMembers'
-             ]
-            ]
-         }
+      include: [
+        {
+          model: Member,
+          attributes: []
+
+        },
+        {
+            model: Image,
+            attributes: []
+        }
+      ],
+      attributes: [
+          'id',
+          'organizerId',
+          "name",
+          "about",
+          "type",
+          "private",
+          "city",
+          "state",
+          "createdAt",
+          "updatedAt",
+          [sequelize.fn("COUNT", sequelize.col("Members.id")), "numMembers"],
+          [sequelize.col('Images.url'), 'previewImage']
+        ],
+      group: ["Group.id"]
     });
     res.json({
-        groups
+      groups,
     });
-});
+  });
 //still need to figure out how to include
 //numMembers and previewImage * aggregate data?
 
