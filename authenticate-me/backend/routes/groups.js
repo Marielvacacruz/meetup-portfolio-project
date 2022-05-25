@@ -5,6 +5,49 @@ const { Group, Member, User, Image, sequelize } = require('../db/models');
 
 const router = express.Router();
 
+//Get Details of a Group from an id
+router.get('/:groupId', async(req, res) => {
+    const { groupId } = req.params;
+
+    const currentGroup = await Group.findByPk(groupId, {
+        include: [
+            {
+                model: Image,
+                attributes: []
+            },
+            {
+                model: Member,
+                attributes: []
+            },
+            {
+                model:User //can't figure out how to alias as 'Organizer'
+            }
+
+            ],
+            attributes: {
+                include: [
+                    [sequelize.fn("COUNT", sequelize.col("Members.id")), "numMembers"],
+                    [sequelize.col('Images.url'), 'images'] //forcing this format
+                ]
+            }
+        }
+
+    );
+
+    if(!currentGroup){
+        let err = new Error('Group Could not be found');
+        err.status = 404
+        throw err;
+    }
+
+    res.json({
+        currentGroup
+    });
+
+});
+
+
+
 //Get all Groups
 router.get("/", async (req, res) => {
     const groups = await Group.findAll({
@@ -19,7 +62,9 @@ router.get("/", async (req, res) => {
             attributes: []
         }
       ],
-      attributes: [
+      attributes:
+
+        [
           'id',
           'organizerId',
           "name",
