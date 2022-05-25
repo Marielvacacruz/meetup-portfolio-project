@@ -1,5 +1,5 @@
 const express =  require('express');
-const {restoreUser, requireAuth } = require('../utils/auth');
+const {restoreUser} = require('../utils/auth');
 // const { User, Group } = require('../db/models');
 // const { check } = require('express-validator');
 // const { handleValidationErrors } = require('../utils/validation');
@@ -50,12 +50,6 @@ router.get('/current', restoreUser, (req, res) => {
       });
   } else return res.json({});
 });
-
-//Get all Groups Joined or Organized by Current User
-// router.get('/current/groups', requireAuth, async (req, res) => {
-
-// });
-
 
 
 module.exports =  router;
