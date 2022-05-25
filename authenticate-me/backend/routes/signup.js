@@ -10,7 +10,12 @@ const router = express.Router();
 
 //middleware to validate sign up
 const validateSignup = [
-  //add validations for first and last names
+  check("firstName")
+    .exists({ checkFalsy: true })
+    .withMessage("Please provide your first name"),
+  check("lastName")
+    .exists({ checkFalsy: true })
+    .withMessage("Please provide your last name"),
     check('email')
       .exists({ checkFalsy: true })
       .isEmail()
@@ -33,6 +38,17 @@ const validateSignup = [
 //Sign up
 router.post('/', validateSignup, async (req, res) => {
     const { email, username, password, firstName, lastName} = req.body;
+
+    const checkEmail = await User.findOne({ where: { email } });
+
+      if(checkEmail) {
+      let err = new Error('User already exists');
+      err.status = 403,
+      err.errors = {
+        email: "User with that email already exists"
+      }
+      throw err;
+    }
 
     const user = await User.signup({ email, username, password, firstName, lastName});
     await setTokenCookie(res, user);
