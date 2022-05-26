@@ -177,6 +177,38 @@ router.put('/:groupId', requireAuth, validateGroup, async(req, res) => {
 
 });
 
+//Delete a Group
+router.delete('/:groupId', requireAuth, async(req, res) => {
+    const { user } = req;
+    let { groupId } = req.params;
+        groupId = parseInt(groupId);
+
+    const group = await Group.findByPk(groupId)
+
+    if(!group){
+        res.status(404);
+        return res.json({
+            message: 'Group could not be found',
+            statusCode: 404
+        });
+    }
+
+     if(user.id !== group.organizerId){
+        res.status(403);
+        return res.json({
+            message: 'Current User must be the Organizer to delete Group',
+            statusCode: 403
+        });
+     };
+
+     await group.destroy();
+
+     return res.json({
+         message: 'Successfully Deleted',
+         statusCode: 200
+     });
+});
+
 
 
 
