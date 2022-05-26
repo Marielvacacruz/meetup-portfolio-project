@@ -3,6 +3,7 @@ const { requireAuth, restoreUser } = require('../utils/auth');
 const { check } = require('express-validator');
 const { handleValidationErrors } = require('../utils/validation');
 const { Group, Member, User, Image, sequelize } = require('../db/models');
+const member = require('../db/models/member');
 
 
 const router = express.Router();
@@ -80,7 +81,7 @@ router.get('/:groupId/members',restoreUser, async(req, res) => {
                     attributes: ['id', 'firstName', 'lastName']
                 },
             ],
-            attributes: ['status']
+            attributes: ['status'] //need to figure out how to exclude 'pending'
         });
         return res.json({
             Members
@@ -88,10 +89,68 @@ router.get('/:groupId/members',restoreUser, async(req, res) => {
 
     }
 
+});
+
+
+//Request membership for a Group based on the Group's id
+
+router.post('/:groupId/members', requireAuth, async(req, res) => {
+    const { user } = req;
+
+    let { groupId } = req.params;
+        groupId = parseInt(groupId);
+
+    const group = await Group.findByPk(groupId, {
+        include: [
+            {
+                model: Member
+            }
+        ]
+    })
+
+    if(!group){
+        res.status(404);
+        return res.json({
+            message: 'Group could not be found',
+            statusCode: 404
+        });
+    };
+
+    if(user.id === member.userId && member.status === 'pending'){
+        res.status(400);
+        return res.json(
+            {
+            message: "Membership has already been requested",
+            statusCode: 400
+          })
+    };
+
+    if(user.id === member.userId && member.status === 'member'){
+        res.status(400);
+        return res.json(
+            {
+            message: "User is already a member of the group",
+            statusCode: 400
+          })
+    };
+
+    if(user.id === member.userId && member.status === 'host'){
+        res.status(400);
+        return res.json(
+            {
+            message: "User is already a member of the group",
+            statusCode: 400
+          })
+    };
+
+    return res.json({
+        group
+    });
+
+
 
 
 });
-
 
 
 //Get Details of a Group from an id
