@@ -8,6 +8,7 @@ const { Event, Group, Member, Image, Attendee, Venue, sequelize} = require('../d
 
 const router = express.Router();
 
+
 //Get all events
 router.get('/', async(req, res) => {
 

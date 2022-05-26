@@ -2,7 +2,7 @@ const express = require('express');
 const { requireAuth, restoreUser } = require('../utils/auth');
 const { check } = require('express-validator');
 const { handleValidationErrors } = require('../utils/validation');
-const { Group, Member, User, Image, sequelize } = require('../db/models');
+const { Group, Member, User, Image, sequelize, Event, Attendee, Venue} = require('../db/models');
 const member = require('../db/models/member');
 
 
@@ -38,6 +38,60 @@ const validateGroup = [
         .withMessage('State is required'),
     handleValidationErrors
 ];
+
+//Get all events of a group by id
+router.get('/:groupId/events', async(req, res) => {
+    let  { groupId } = req.params;
+        groupId = parseInt(groupId);
+
+        const group = await Group.findByPk(groupId);
+
+        if(!group){
+            res.status(404);
+            return res.json({
+            message: 'Group could not be found',
+            statusCode: 404
+            });
+        };
+
+        const Events = await Event.findAll({
+            where: {groupId},
+            include: [
+                {
+                    model: Attendee,
+                    attributes: []
+                },
+                {
+                    model: Image,
+                    attributes: []
+                },
+                {
+                    model: Group,
+                    attributes: ['id', 'name', 'city', 'state']
+                },
+                {
+                    model: Venue,
+                    attributes: ['id', 'city', 'state']
+                }
+            ],
+            attributes:[
+                'id',
+                'venueId',
+                'groupId',
+                'name',
+                'type',
+                'startDate',
+                 [sequelize.fn("COUNT", sequelize.col("Attendees.id")), "numAttending"],
+                 [sequelize.col('Images.url'), 'previewImage']
+
+                ],
+            group: ['Event.id']
+        })
+
+        return res.json({
+            Events
+        })
+});
 
 //Get all members of a Group Specified by it's Id
 router.get('/:groupId/members',restoreUser, async(req, res) => {
