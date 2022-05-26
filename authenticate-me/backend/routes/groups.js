@@ -240,7 +240,7 @@ router.get('/:groupId', async(req, res) => {
         }
 
     );
-        console.log(currentGroup)
+    
     if(currentGroup.id === null){
         let err = new Error('Group Could not be found');
         err.status = 404
