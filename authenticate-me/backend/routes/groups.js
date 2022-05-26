@@ -93,6 +93,47 @@ router.get('/:groupId/events', async(req, res) => {
         })
 });
 
+//Create and event for a Group
+router.post('/:groupId/events', requireAuth, async(req, res) => {
+    const { user } = req;
+
+    let { groupId } = req.params;
+        groupId = parseInt(groupId);
+
+    const {
+        venueId,
+        name,
+        type,
+        capacity,
+        price,
+        description,
+        startDate,
+        endDate
+    } = req.body;
+
+    const group = await Group.findByPk(groupId);
+    const status = await Member.findOne({where: {userId: user.id}})
+
+    if(user.id === group.organizerId || status.status === 'co-host'){
+        const event = await Event.create({
+        groupId: groupId,
+        venueId,
+        name,
+        type,
+        capacity,
+        price,
+        description,
+        startDate,
+        endDate
+
+        });
+        return res.json(
+            event
+        );
+    };
+
+});
+
 //Get all members of a Group Specified by it's Id
 router.get('/:groupId/members',restoreUser, async(req, res) => {
     const  { user } = req;
@@ -135,7 +176,7 @@ router.get('/:groupId/members',restoreUser, async(req, res) => {
                     attributes: ['id', 'firstName', 'lastName']
                 },
             ],
-            attributes: ['status'] //need to figure out how to exclude 'pending'
+            attributes: ['status']
         });
         return res.json({
             Members
@@ -240,7 +281,7 @@ router.get('/:groupId', async(req, res) => {
         }
 
     );
-    
+
     if(currentGroup.id === null){
         let err = new Error('Group Could not be found');
         err.status = 404
@@ -288,7 +329,7 @@ router.get("/", async (req, res) => {
 
 //Create a new Group
 router.post('/', requireAuth, validateGroup, async (req, res) => {
-    const { name, about, type, private, city, state }= req.body;
+    const { name, about, type, private, city, state } = req.body;
     const { user } = req; //grab user information
 
   const newGroup = await Group.create({
