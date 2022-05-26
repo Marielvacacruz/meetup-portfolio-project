@@ -8,7 +8,7 @@ const { Group, Member, User, Image, sequelize } = require('../db/models');
 const router = express.Router();
 
 //middleware to validate new Group
-const validateNewGroup = [
+const validateGroup = [
     check('name')
       .exists({ checkFalsy: true })
       .withMessage('Name is required')
@@ -116,12 +116,11 @@ router.get("/", async (req, res) => {
     });
   });
 
+
 //Create a new Group
-router.post('/', requireAuth, validateNewGroup, async (req, res) => {
+router.post('/', requireAuth, validateGroup, async (req, res) => {
     const { name, about, type, private, city, state }= req.body;
     const { user } = req; //grab user information
-
-    //create new group
 
   const newGroup = await Group.create({
       organizerId: user.id,
@@ -136,6 +135,45 @@ router.post('/', requireAuth, validateNewGroup, async (req, res) => {
   return res.json(
       newGroup
   );
+
+});
+
+//Edit a Group
+
+router.put('/:groupId', requireAuth, validateGroup, async(req, res) => {
+    const { user } = req;
+    let { groupId } = req.params;
+        groupId = parseInt(groupId);
+    const { name, about, type, private, city, state } = req.body;
+
+    const group = await Group.findByPk(groupId)
+
+    if(!group){
+        res.status(404);
+        return res.json({
+            message: 'Group could not be found',
+            statusCode: 404
+        });
+    }
+
+     if(user.id !== group.organizerId){
+        res.status(403);
+        return res.json({
+            message: 'Current User must be the Organizer to edit Group',
+            statusCode: 403
+        });
+     };
+
+     await group.update({
+         name,
+         about,
+         type,
+         private,
+         city,
+         state
+     });
+
+     res.json(group);
 
 });
 
