@@ -38,10 +38,50 @@ const validateGroup = [
     handleValidationErrors
 ];
 
+//Get all members of a Group Specified by it's Id
+router.get('/:groupId/members',requireAuth, async(req, res) => {
+    const  { user } = req;
+    let { groupId } = req.params;
+        groupId = parseInt(groupId);
+
+    const group = await Group.findByPk(groupId);
+
+    if(!group){
+        res.status(404);
+        return res.json({
+            message: 'Group could not be found',
+            statusCode: 404
+        });
+    };
+    //if user is organizer:
+    if(user.id === group.organizerId){
+
+        const Members = await Member.findAll({
+            where: {groupId},
+            include: [
+                {
+                    model: User,
+                    attributes: ['id', 'firstName', 'lastName']
+                },
+            ],
+            attributes: ['status'],
+        });
+        return res.json({
+            Members
+        });
+
+    }
+
+
+
+});
+
+
+
 //Get Details of a Group from an id
 router.get('/:groupId', async(req, res) => {
     let { groupId } = req.params;
-    groupId = parseInt(groupId);
+        groupId = parseInt(groupId);
 
     const images = await Image.findAll({
         where: {groupId},
