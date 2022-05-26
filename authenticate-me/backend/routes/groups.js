@@ -3,7 +3,7 @@ const { requireAuth, restoreUser } = require('../utils/auth');
 const { check } = require('express-validator');
 const { handleValidationErrors } = require('../utils/validation');
 const { Group, Member, User, Image, sequelize } = require('../db/models');
-const member = require('../db/models/member');
+// const member = require('../db/models/member');
 
 
 const router = express.Router();
@@ -186,7 +186,7 @@ router.get('/:groupId', async(req, res) => {
         }
 
     );
-        console.log(currentGroup)
+    
     if(currentGroup.id === null){
         let err = new Error('Group Could not be found');
         err.status = 404
