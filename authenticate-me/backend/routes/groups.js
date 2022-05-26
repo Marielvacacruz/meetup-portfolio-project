@@ -1,5 +1,5 @@
 const express = require('express');
-const { requireAuth } = require('../utils/auth');
+const { requireAuth, restoreUser } = require('../utils/auth');
 const { check } = require('express-validator');
 const { handleValidationErrors } = require('../utils/validation');
 const { Group, Member, User, Image, sequelize } = require('../db/models');
@@ -39,7 +39,7 @@ const validateGroup = [
 ];
 
 //Get all members of a Group Specified by it's Id
-router.get('/:groupId/members',requireAuth, async(req, res) => {
+router.get('/:groupId/members',restoreUser, async(req, res) => {
     const  { user } = req;
     let { groupId } = req.params;
         groupId = parseInt(groupId);
@@ -54,7 +54,7 @@ router.get('/:groupId/members',requireAuth, async(req, res) => {
         });
     };
     //if user is organizer:
-    if(user.id === group.organizerId){
+    if( user && user.id === group.organizerId){
 
         const Members = await Member.findAll({
             where: {groupId},
@@ -65,6 +65,22 @@ router.get('/:groupId/members',requireAuth, async(req, res) => {
                 },
             ],
             attributes: ['status'],
+        });
+        return res.json({
+            Members
+        });
+    };
+
+    if( !user || user.id !== group.organizerId){
+        const Members = await Member.findAll({
+            where: {groupId},
+            include: [
+                {
+                    model: User,
+                    attributes: ['id', 'firstName', 'lastName']
+                },
+            ],
+            attributes: ['status']
         });
         return res.json({
             Members
