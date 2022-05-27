@@ -1,15 +1,8 @@
 const express =  require('express');
-<<<<<<< HEAD
-const {restoreUser} = require('../utils/auth');
-// const { User, Group } = require('../db/models');
-// const { check } = require('express-validator');
-// const { handleValidationErrors } = require('../utils/validation');
-=======
 const { setTokenCookie, restoreUser, requireAuth } = require('../utils/auth');
 const { User, Group, Member, Image, sequelize} = require('../db/models');
 const { check } = require('express-validator');
 const { handleValidationErrors } = require('../utils/validation');
->>>>>>> group-routes
 
 const router = express.Router();
 
