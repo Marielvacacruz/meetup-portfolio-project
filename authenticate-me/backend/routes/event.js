@@ -1,7 +1,6 @@
 const express = require('express');
 const { requireAuth, restoreUser } = require('../utils/auth');
-const { check } = require('express-validator');
-const { handleValidationErrors } = require('../utils/validation');
+const {validateEvent} = require('../utils/validateAll');
 const { Event, Group, Member, Image, Attendee, Venue, sequelize} = require('../db/models');
 
 
@@ -47,7 +46,7 @@ router.get('/:eventId', async(req, res) => {
             },
         });
 
-        if(!event){
+        if(!event || !event.id){
             res.status(404);
             return res.json({
             message: 'Event could not be found',
