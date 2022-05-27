@@ -7,6 +7,75 @@ const { Event, Group, Member, Image, Attendee, Venue, sequelize} = require('../d
 
 const router = express.Router();
 
+//Edit an Event specified by its id (test this route once merged)
+router.put('/:eventId', requireAuth, validateEvent, async(req, res) => {
+    const { user } = req;
+
+    let { eventId } = req.params;
+        eventId = parseInt(eventId);
+
+        const {
+            venueId,
+            name,
+            type,
+            capacity,
+            price,
+            description,
+            startDate,
+            endDate
+        } = req.body;
+
+        const venue = await Venue.findByPk(venueId);
+        if(!venue){
+            res.status(404);
+            return res.json({
+                message: 'Venue could not be found',
+                statusCode: 404
+            });
+        };
+
+        const event = await Event.findByPk(eventId, {
+            include: [
+                {
+                    model: Group,
+                    include: [
+                        {
+                            model: Member,
+                            where: {
+                                userId: user.id
+                            }
+                        }
+                    ]
+                }
+            ]
+        });
+
+        if(!event){
+            res.status(404);
+            return res.json({
+                message: 'Event could not be found',
+                statusCode: 404
+            });
+        };
+
+        if(user.id === Group.organizerId || Member.status === 'co-host'){
+            const event = await Event.update({
+            venueId,
+            name,
+            type,
+            capacity,
+            price,
+            description,
+            startDate,
+            endDate
+
+            });
+            return res.json(
+                event
+            );
+        };
+});
+
 //Get details of event by it's id
 router.get('/:eventId', async(req, res) => {
     let { eventId } = req.params;
