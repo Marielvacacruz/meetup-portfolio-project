@@ -1,8 +1,15 @@
 const express =  require('express');
+<<<<<<< HEAD
 const {restoreUser} = require('../utils/auth');
 // const { User, Group } = require('../db/models');
 // const { check } = require('express-validator');
 // const { handleValidationErrors } = require('../utils/validation');
+=======
+const { setTokenCookie, restoreUser, requireAuth } = require('../utils/auth');
+const { User, Group, Member, Image, sequelize} = require('../db/models');
+const { check } = require('express-validator');
+const { handleValidationErrors } = require('../utils/validation');
+>>>>>>> group-routes
 
 const router = express.Router();
 
@@ -51,5 +58,45 @@ router.get('/current', restoreUser, (req, res) => {
   } else return res.json({});
 });
 
+//Get all Groups Joined or Organized by Current User
+router.get('/current/groups', requireAuth, async (req, res) => {
+  const { user } = req;
+
+  const Groups = await Group.findAll({
+    where:{
+     organizerId: user.id
+  },
+  include: [
+    {
+      model: Member,
+      attributes: [],
+      where: {userId: user.id}
+    },
+    {
+      model: Image,
+      attributes: []
+  }
+  ],
+  attributes: [
+    'id',
+    'organizerId',
+    "name",
+    "about",
+    "type",
+    "private",
+    "city",
+    "state",
+    "createdAt",
+    "updatedAt",
+    [sequelize.fn("COUNT", sequelize.col("Members.id")), "numMembers"], //numMembers count is wrong
+    [sequelize.col('Images.url'), 'previewImage']
+  ],
+group: ["Group.id"]
+});
+
+  return res.json({
+    Groups
+  })
+});
 
 module.exports =  router;

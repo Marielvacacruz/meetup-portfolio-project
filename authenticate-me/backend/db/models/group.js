@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       Group.belongsTo(
-        models.User, { foreignKey: 'organizerId' }
+        models.User, { as: 'Organizer', foreignKey: 'organizerId' }
       );
 
       Group.belongsToMany(
@@ -28,6 +28,9 @@ module.exports = (sequelize, DataTypes) => {
 
       Group.hasMany(
         models.Image, { foreignKey: 'groupId', onDelete: 'CASCADE', hooks: true}
+      );
+      Group.hasMany(
+        models.Member, {foreignKey: 'groupId', onDelete: 'CASCADE', hooks: true}
       );
     }
   }

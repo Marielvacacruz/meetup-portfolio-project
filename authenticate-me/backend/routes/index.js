@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const loginRouter = require('./login');
 const usersRouter = require('./users');
+<<<<<<< HEAD
 const signupRouter = require('./signup');
 // const groupsRouter = require('./groups');
 
@@ -10,6 +11,13 @@ router.use('/users', usersRouter);
 router.use('/signup', signupRouter);
 // router.use('/groups', groupsRouter);
 
+=======
+const groupsRouter = require('./groups');
+
+router.use('/login', loginRouter);
+router.use('/users', usersRouter);
+router.use('/groups', groupsRouter);
+>>>>>>> group-routes
 
 
 //test route
