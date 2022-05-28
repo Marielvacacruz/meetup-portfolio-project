@@ -1,42 +1,125 @@
 const express = require('express');
 const { requireAuth, restoreUser } = require('../utils/auth');
-const { check } = require('express-validator');
-const { handleValidationErrors } = require('../utils/validation');
-const { Group, Member, User, Image, sequelize } = require('../db/models');
+const {validateEvent, validateGroup} = require('../utils/validateAll');
+const { Group, Member, User, Image, sequelize, Event, Attendee, Venue} = require('../db/models');
+
 
 
 const router = express.Router();
 
-//middleware to validate new Group
-const validateGroup = [
-    check('name')
-      .exists({ checkFalsy: true })
-      .withMessage('Name is required')
-      .isLength({ max: 60 })
-      .withMessage('Name must be 60 characters or less.'),
-    check('about')
-      .exists({ checkFalsy: true })
-      .withMessage('About is required')
-      .isLength({ min: 50 })
-      .withMessage('About must be 50 characters or more'),
-    check('type')
-      .exists({ checkFalsy: true })
-      .withMessage('Must choose a type')
-      .isIn(['Online', 'In-person'])
-      .withMessage('Type must be Online or In-person'),
-    check('private')
-        .exists({checkFalsy: true })
-        .withMessage('Must select')
-        .isBoolean()
-        .withMessage('Must choose option'),
-    check('city')
-        .exists({ checkFalsy: true })
-        .withMessage('City is required'),
-    check('state')
-        .exists({ checkFalsy: true })
-        .withMessage('State is required'),
-    handleValidationErrors
-];
+
+//Get all events of a group by id
+router.get('/:groupId/events', async(req, res) => {
+    let  { groupId } = req.params;
+        groupId = parseInt(groupId);
+
+        const group = await Group.findByPk(groupId);
+
+        if(!group){
+            res.status(404);
+            return res.json({
+            message: 'Group could not be found',
+            statusCode: 404
+            });
+        };
+
+        const Events = await Event.findAll({
+            where: {groupId},
+            include: [
+                {
+                    model: Attendee,
+                    attributes: []
+                },
+                {
+                    model: Image,
+                    attributes: []
+                },
+                {
+                    model: Group,
+                    attributes: ['id', 'name', 'city', 'state']
+                },
+                {
+                    model: Venue,
+                    attributes: ['id', 'city', 'state']
+                }
+            ],
+            attributes:[
+                'id',
+                'venueId',
+                'groupId',
+                'name',
+                'type',
+                'startDate',
+                 [sequelize.fn("COUNT", sequelize.col("Attendees.id")), "numAttending"],
+                 [sequelize.col('Images.url'), 'previewImage']
+
+                ],
+            group: ['Event.id']
+        })
+
+        return res.json({
+            Events
+        })
+});
+
+//Create an event for a Group
+router.post('/:groupId/events', requireAuth, validateEvent, async(req, res) => {
+    const { user } = req;
+
+    let { groupId } = req.params;
+        groupId = parseInt(groupId);
+
+    const {
+        venueId,
+        name,
+        type,
+        capacity,
+        price,
+        description,
+        startDate,
+        endDate
+    } = req.body;
+
+    const venue = await Venue.findByPk(venueId);
+    if(!venue){
+        res.status(404);
+        return res.json({
+            message: 'Venue could not be found',
+            statusCode: 404
+        });
+    };
+
+    const group = await Group.findByPk(groupId);
+
+    if(!group){
+        res.status(404);
+        return res.json({
+            message: 'Group could not be found',
+            statusCode: 404
+        });
+    };
+
+    const status = await Member.findOne({where: {userId: user.id, groupId}});
+
+    if(user.id === group.organizerId || status.status === 'co-host'){
+        const event = await Event.create({
+        groupId: groupId,
+        venueId,
+        name,
+        type,
+        capacity,
+        price,
+        description,
+        startDate,
+        endDate
+
+        });
+        return res.json(
+            event
+        );
+    };
+
+});
 
 //Get all members of a Group Specified by it's Id
 router.get('/:groupId/members',restoreUser, async(req, res) => {
@@ -80,7 +163,7 @@ router.get('/:groupId/members',restoreUser, async(req, res) => {
                     attributes: ['id', 'firstName', 'lastName']
                 },
             ],
-            attributes: ['status'] //need to figure out how to exclude 'pending'
+            attributes: ['status']
         });
         return res.json({
             Members
@@ -233,7 +316,7 @@ router.get("/", async (req, res) => {
 
 //Create a new Group
 router.post('/', requireAuth, validateGroup, async (req, res) => {
-    const { name, about, type, private, city, state }= req.body;
+    const { name, about, type, private, city, state } = req.body;
     const { user } = req; //grab user information
 
   const newGroup = await Group.create({
