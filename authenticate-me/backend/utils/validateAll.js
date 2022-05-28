@@ -53,7 +53,7 @@ const validateGroup = [
     check('type')
       .exists({ checkFalsy: true })
       .withMessage('Must choose a type')
-      .isIn(['Online', 'In-person'])
+      .isIn(['Online', 'In-Person'])
       .withMessage('Type must be Online or In-person'),
     check('private')
         .exists({checkFalsy: true })

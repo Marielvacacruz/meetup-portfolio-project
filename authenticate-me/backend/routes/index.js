@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const loginRouter = require('./login');
 const usersRouter = require('./users');
-<<<<<<< HEAD
 const signupRouter = require('./signup');
 const groupsRouter = require('./groups');
 const  eventRouter = require('./event');
@@ -13,13 +12,6 @@ router.use('/signup', signupRouter);
 router.use('/groups', groupsRouter);
 router.use('/events', eventRouter);
 
-=======
-const groupsRouter = require('./groups');
-
-router.use('/login', loginRouter);
-router.use('/users', usersRouter);
-router.use('/groups', groupsRouter);
->>>>>>> group-routes
 
 
 //test route

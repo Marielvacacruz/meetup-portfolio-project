@@ -122,56 +122,102 @@ router.post('/:groupId/events', requireAuth, validateEvent, async(req, res) => {
 });
 
 //Get all members of a Group Specified by it's Id
-router.get('/:groupId/members',restoreUser, async(req, res) => {
-    const  { user } = req;
-    let { groupId } = req.params;
-        groupId = parseInt(groupId);
+// router.get('/:groupId/members',restoreUser, async(req, res) => {
+//     const  { user } = req;
+//     let { groupId } = req.params;
+//         groupId = parseInt(groupId);
 
-    const group = await Group.findByPk(groupId);
+//     const group = await Group.findByPk(groupId);
 
-    if(!group){
-        res.status(404);
-        return res.json({
-            message: 'Group could not be found',
-            statusCode: 404
-        });
-    };
-    //if user is organizer:
-    if( user && user.id === group.organizerId){
+//     if(!group){
+//         res.status(404);
+//         return res.json({
+//             message: 'Group could not be found',
+//             statusCode: 404
+//         });
+//     };
 
-        const Members = await Member.findAll({
-            where: {groupId},
-            include: [
-                {
-                    model: User,
-                    attributes: ['id', 'firstName', 'lastName']
-                },
-            ],
-            attributes: ['status'],
-        });
-        return res.json({
-            Members
-        });
-    };
+//     if(user.id === group.organizerId){
+//         const Members = await User.findAll({
+//             attributes: ['id', 'firstName', 'lastName'],
+//             include: [
+//                 {
+//                     model: Member,
+//                     attributes: ['status']
+//                 }
+//             ]
+//         });
 
-    if( !user || user.id !== group.organizerId){
-        const Members = await Member.findAll({
-            where: {groupId},
-            include: [
-                {
-                    model: User,
-                    attributes: ['id', 'firstName', 'lastName']
-                },
-            ],
-            attributes: ['status']
-        });
-        return res.json({
-            Members
-        });
+//         return res.json({
+//             Members
+//         });
+//     }
+//     // //if user is organizer:
+//     // if( user && user.id === group.organizerId){
 
-    }
+//     //     const Members = await Member.findAll({
+//     //         where: {groupId},
+//     //         include: [
+//     //             {
+//     //                 model: User,
+//     //                 attributes: ['id', 'firstName', 'lastName']
+//     //             },
+//     //         ],
+//     //         attributes: ['status'],
+//     //     });
+//     //     return res.json({
+//     //         Members
+//     //     });
+//     // };
 
-});
+//     // if( !user || user.id !== group.organizerId){
+//     //     const Members = await Member.findAll({
+//     //         where: {groupId},
+//     //         include: [
+//     //             {
+//     //                 model: User,
+//     //                 attributes: ['id', 'firstName', 'lastName']
+//     //             },
+//     //         ],
+//     //         attributes: ['status']
+//     //     });
+//     //     return res.json({
+//     //         Members
+//     //     });
+
+
+
+// });
+
+// router.get('/:groupId/members', restoreUser, async(req, res) => {
+//     const  { user } = req;
+//     let { groupId } = req.params;
+
+//     const group = await Group.findByPk(groupId, {
+//         where: {
+//             organizerId: user.id
+//         },
+//         attributes: [],
+//         include: {
+//             model: User,
+//             attributes: ['id', 'firstName', 'lastName']
+//         }
+//     })
+
+//     const member = await Member.findAll({
+//         where: {
+//             userId: user.id,
+//             groupId,
+//             },
+//         attributes: ['status']
+//     })
+
+//     res.json({
+//         group,
+//         member,
+//     })
+
+// })
 
 
 //Request membership for a Group based on the Group's id
@@ -256,7 +302,7 @@ router.get('/:groupId', async(req, res) => {
                 attributes: []
             },
             {
-                model:User, as:'Organizer'
+                model:User, as:'Organizer',
             }
 
             ],
@@ -287,7 +333,7 @@ router.get('/:groupId', async(req, res) => {
 
 //Get all Groups
 router.get("/", async (req, res) => {
-    const groups = await Group.findAll({
+    const Groups = await Group.findAll({
       include: [
         {
           model: Member,
@@ -309,7 +355,7 @@ router.get("/", async (req, res) => {
       group: ["Group.id"]
     });
     res.json({
-      groups,
+      Groups,
     });
   });
 
