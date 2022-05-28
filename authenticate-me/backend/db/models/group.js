@@ -23,7 +23,7 @@ module.exports = (sequelize, DataTypes) => {
       );
 
       Group.hasMany(
-        models.Venue, { foreignKey: 'groupId', onDelete: 'CASCADE', hooks: true}
+        models.Venue, { foreignKey: 'groupId'}
       );
 
       Group.hasMany(

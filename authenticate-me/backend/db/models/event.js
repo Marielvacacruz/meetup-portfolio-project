@@ -27,7 +27,7 @@ module.exports = (sequelize, DataTypes) => {
       );
 
       Event.hasMany(
-        models.Attendee, {foreignKey: 'eventId'}
+        models.Attendee, {foreignKey: 'eventId',  onDelete: 'CASCADE', hooks: true}
       )
     }
   }

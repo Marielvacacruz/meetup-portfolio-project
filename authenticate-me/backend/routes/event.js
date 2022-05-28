@@ -173,4 +173,42 @@ router.get('/', async(req, res) => {
     });
 });
 
+//Delete an Event specified by it's id
+router.delete('/:eventId',requireAuth, async(req, res) => {
+    const { user } = req;
+    const { eventId } = req.params;
+
+    const  event = await Event.findByPk(eventId);
+
+    if(!event){
+        res.status(404);
+            return res.json({
+            message: 'Event could not be found',
+            statusCode: 404
+            });
+    };
+
+   const group = await Group.findByPk(event.groupId, {
+        where: {organizerId: user.id}
+   });
+
+   if(group){
+       await event.destroy();
+       return res.json({
+           message: 'Successfully deleted',
+           statusCode: 200
+       });
+   }else{
+       res.status(403);
+       return res.json({
+           message: 'Unauthorized',
+           statusCode: 403
+       })
+   }
+
+
+
+
+});
+
 module.exports = router;
