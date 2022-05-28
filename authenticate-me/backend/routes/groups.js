@@ -121,9 +121,28 @@ router.post('/:groupId/events', requireAuth, validateEvent, async(req, res) => {
 
 });
 
+
 //Get all members of a Group Specified by it's Id
-// router.get('/:groupId/members',restoreUser, async(req, res) => {
-//     const  { user } = req;
+ router.get('/:groupId/members',restoreUser, async(req, res) => {
+
+    const  { user } = req;
+    let { groupId } = req.params;
+
+    const Members = await Group.findByPk(groupId, {
+        where: {
+            organizerId: user.id,
+        },
+        attributes: [],
+        include: {
+            model: User,
+            attributes: ['id', 'firstName', 'lastName'],
+            through: {attributes: ['status']}
+        }
+    })
+
+    res.json(Members)
+
+    //     const  { user } = req;
 //     let { groupId } = req.params;
 //         groupId = parseInt(groupId);
 
@@ -187,7 +206,7 @@ router.post('/:groupId/events', requireAuth, validateEvent, async(req, res) => {
 
 
 
-// });
+ });
 
 // router.get('/:groupId/members', restoreUser, async(req, res) => {
 //     const  { user } = req;

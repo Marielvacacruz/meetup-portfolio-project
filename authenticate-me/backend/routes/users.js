@@ -62,7 +62,7 @@ router.get('/current/groups', requireAuth, async (req, res) => {
   include: [
     {
       model: Member,
-      attributes: ['id', 'status'],
+      attributes: [],
       // where: {userId: user.id}
     },
     {

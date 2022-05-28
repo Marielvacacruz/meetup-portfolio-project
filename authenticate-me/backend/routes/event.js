@@ -58,8 +58,9 @@ router.put('/:eventId', requireAuth, validateEvent, async(req, res) => {
             });
         };
 
-        if(user.id === Group.organizerId || Member.status === 'co-host'){
-            const event = await Event.update({
+
+        if(user.id === event.Group.organizerId || event.Group.Members[0].status === 'co-host'){
+          await event.update({
             venueId,
             name,
             type,
@@ -68,7 +69,6 @@ router.put('/:eventId', requireAuth, validateEvent, async(req, res) => {
             description,
             startDate,
             endDate
-
             });
             return res.json(
                 event
