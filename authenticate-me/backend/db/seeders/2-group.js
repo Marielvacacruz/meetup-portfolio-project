@@ -7,7 +7,7 @@ module.exports = {
       organizerId: 1,
       name: 'Academic Writing Group',
       about: 'lorem ipsum',
-      type: 'In-Person',
+      type: 'In person',
       private: true,
       city: 'New Orleans',
       state: 'Louisiana'
@@ -16,7 +16,7 @@ module.exports = {
       organizerId: 2,
       name: 'Outdoor Adventures',
       about: 'we go outside',
-      type: 'In-Person',
+      type: 'In person',
       private: true,
       city: 'Seattle',
       state: 'Washington'

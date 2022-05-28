@@ -299,6 +299,16 @@ router.post('/:groupId/members', requireAuth, async(req, res) => {
 
 });
 
+// Change status of membership
+router.put('/:groupId/members', requireAuth, async(req, res) => {
+    const { user } = req;
+    const { userId, status } = req.body;
+
+    
+
+
+});
+
 
 //Get Details of a Group from an id
 router.get('/:groupId', async(req, res) => {

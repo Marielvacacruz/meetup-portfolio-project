@@ -14,8 +14,8 @@ const validateEvent = [
     check('type')
       .exists({ checkFalsy: true })
       .withMessage('Must choose a type')
-      .isIn(['Online', 'In-Person'])
-      .withMessage('Type must be Online or In-person'),
+      .isIn(['Online', 'In person'])
+      .withMessage('Type must be Online or In person'),
     check('capacity')
         .exists({checkFalsy: true })
         .withMessage('Must enter Capacity')
@@ -53,8 +53,8 @@ const validateGroup = [
     check('type')
       .exists({ checkFalsy: true })
       .withMessage('Must choose a type')
-      .isIn(['Online', 'In-Person'])
-      .withMessage('Type must be Online or In-person'),
+      .isIn(['Online', 'In person'])
+      .withMessage('Type must be Online or In person'),
     check('private')
         .exists({checkFalsy: true })
         .withMessage('Must select')
