@@ -19,6 +19,16 @@ module.exports = {
         userId: 3,
         groupId: 1,
         status: 'member'
+      },
+      {
+        userId: 4,
+        groupId: 2,
+        status: 'pending'
+      },
+      {
+        userId: 5,
+        groupId: 2,
+        status: 'member'
       }
     ]);
   },
