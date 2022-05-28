@@ -58,12 +58,12 @@ module.exports = (sequelize, DataTypes) => {
       );
 
       User.hasMany(
-<<<<<<< HEAD
         models.Member, {foreignKey: 'userId'}
-=======
+      );
+
+      User.hasMany(
         models.Attendee, { foreignKey: 'userId'}
->>>>>>> event-routes
-      )
+      );
     }
   }
   User.init({
