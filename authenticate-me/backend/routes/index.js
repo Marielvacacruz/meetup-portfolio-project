@@ -4,7 +4,7 @@ const loginRouter = require('./login');
 const usersRouter = require('./users');
 const signupRouter = require('./signup');
 const groupsRouter = require('./groups');
-const  eventRouter = require('./event');
+const eventRouter = require('./event');
 
 router.use('/login', loginRouter);
 router.use('/users', usersRouter);
