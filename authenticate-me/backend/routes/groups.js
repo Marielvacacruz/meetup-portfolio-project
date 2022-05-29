@@ -129,6 +129,46 @@ router.post(
   }
 );
 
+//Create Venue for Group (NEED VALIDATION)
+router.post("/:groupId/venues", requireAuth, async (req, res) => {
+  const { user } = req;
+  const { address, city, state, lat, lng } = req.body;
+
+  const { groupId } = req.params;
+
+  const group = await Group.findByPk(groupId);
+
+  if (!group) {
+    res.status(404);
+    return res.json({
+      message: "Group could not be found",
+      statusCode: 404,
+    });
+  }
+
+  const member = await Member.findOne({
+    where: { userId: user.id, groupId },
+  });
+
+  if (!member) {
+    const err = new Error("membership not found");
+    err.status(404);
+    throw err;
+  }
+
+  if (user.id === group.organizerId || member.status === "co-host") {
+    const venue = await Venue.create({
+      groupId: groupId,
+      address,
+      city,
+      state,
+      lat,
+      lng,
+    });
+    return res.json(venue);
+  }
+});
+
 //Get all members of a Group Specified by it's Id
 router.get("/:groupId/members", restoreUser, async (req, res) => {
   const { user } = req;
