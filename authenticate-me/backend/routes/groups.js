@@ -147,99 +147,7 @@ router.get("/:groupId/members", restoreUser, async (req, res) => {
   });
 
   res.json(Members);
-
-  //     const  { user } = req;
-  //     let { groupId } = req.params;
-  //         groupId = parseInt(groupId);
-
-  //     const group = await Group.findByPk(groupId);
-
-  //     if(!group){
-  //         res.status(404);
-  //         return res.json({
-  //             message: 'Group could not be found',
-  //             statusCode: 404
-  //         });
-  //     };
-
-  //     if(user.id === group.organizerId){
-  //         const Members = await User.findAll({
-  //             attributes: ['id', 'firstName', 'lastName'],
-  //             include: [
-  //                 {
-  //                     model: Member,
-  //                     attributes: ['status']
-  //                 }
-  //             ]
-  //         });
-
-  //         return res.json({
-  //             Members
-  //         });
-  //     }
-  //     // //if user is organizer:
-  //     // if( user && user.id === group.organizerId){
-
-  //     //     const Members = await Member.findAll({
-  //     //         where: {groupId},
-  //     //         include: [
-  //     //             {
-  //     //                 model: User,
-  //     //                 attributes: ['id', 'firstName', 'lastName']
-  //     //             },
-  //     //         ],
-  //     //         attributes: ['status'],
-  //     //     });
-  //     //     return res.json({
-  //     //         Members
-  //     //     });
-  //     // };
-
-  //     // if( !user || user.id !== group.organizerId){
-  //     //     const Members = await Member.findAll({
-  //     //         where: {groupId},
-  //     //         include: [
-  //     //             {
-  //     //                 model: User,
-  //     //                 attributes: ['id', 'firstName', 'lastName']
-  //     //             },
-  //     //         ],
-  //     //         attributes: ['status']
-  //     //     });
-  //     //     return res.json({
-  //     //         Members
-  //     //     });
 });
-
-// router.get('/:groupId/members', restoreUser, async(req, res) => {
-//     const  { user } = req;
-//     let { groupId } = req.params;
-
-//     const group = await Group.findByPk(groupId, {
-//         where: {
-//             organizerId: user.id
-//         },
-//         attributes: [],
-//         include: {
-//             model: User,
-//             attributes: ['id', 'firstName', 'lastName']
-//         }
-//     })
-
-//     const member = await Member.findAll({
-//         where: {
-//             userId: user.id,
-//             groupId,
-//             },
-//         attributes: ['status']
-//     })
-
-//     res.json({
-//         group,
-//         member,
-//     })
-
-// })
 
 //Request membership for a Group based on the Group's id
 router.post("/:groupId/members", requireAuth, restoreUser, async (req, res) => {
@@ -317,74 +225,6 @@ router.post("/:groupId/members", requireAuth, restoreUser, async (req, res) => {
   }
 });
 
-// router.post('/:groupId/members', requireAuth, async(req, res) => {
-//     const { user } = req;
-
-//     let { groupId } = req.params;
-//         groupId = parseInt(groupId);
-
-//     const group = await Group.findByPk(groupId, {
-//         include: [
-//             {
-//                 model: Member
-//             }
-//         ]
-//     });
-
-//     const member = await Member.findOne(groupId,{
-//         where: {
-//             userId: user.id,
-//             groupId
-//         }
-//     });
-
-//     if(!group){
-//         res.status(404);
-//         return res.json({
-//             message: 'Group could not be found',
-//             statusCode: 404
-//         });
-//     };
-
-//     if(member) {
-//         if(member.status === 'pending'){
-//             res.status(400);
-//             return res.json(
-//                 {
-//                 message: "Membership has already been requested",
-//                 statusCode: 400
-//               })
-//         };
-
-//         if(member.status === 'member'){
-//             res.status(400);
-//             return res.json(
-//                 {
-//                 message: "User is already a member of the group",
-//                 statusCode: 400
-//               })
-//         };
-
-//         if(member.status === 'host'){
-//             res.status(400);
-//             return res.json(
-//                 {
-//                 message: "User is already a member of the group",
-//                 statusCode: 400
-//               })
-//         };
-
-//     } else  {
-//         const reqMembership = await Member.create({
-//             userId: user.id,
-//             groupId
-//         });
-//     };
-
-// });
-
-// Change status of membership
-
 //Change status of membership for a group specified by Id
 router.put("/:groupId/members", requireAuth, async (req, res, next) => {
   const { user } = req;
@@ -445,7 +285,7 @@ router.delete("/:groupId/members/:memberId", requireAuth, async (req, res) => {
     const err = new Error("Group couldn't be found");
     err.status = 404;
     err.message = "Group couldn't be found";
-   throw err
+    throw err;
   }
 
   const member = await Member.findOne({
@@ -455,20 +295,16 @@ router.delete("/:groupId/members/:memberId", requireAuth, async (req, res) => {
     },
   });
 
-  if(user.id === group.organizerId || user.id === member.userId){
-      await member.destroy();
-      return res.json(
-        {
-            message: "Successfully deleted membership from group"
-          }
-      )
-  }else{
-      const err = new Error('Unauthorized');
-      err.status = 401;
-      throw err;
+  if (user.id === group.organizerId || user.id === member.userId) {
+    await member.destroy();
+    return res.json({
+      message: "Successfully deleted membership from group",
+    });
+  } else {
+    const err = new Error("Unauthorized");
+    err.status = 401;
+    throw err;
   }
-
-
 });
 
 //Get Details of a Group from an id
