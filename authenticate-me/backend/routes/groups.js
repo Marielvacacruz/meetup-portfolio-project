@@ -157,13 +157,18 @@ router.post("/:groupId/venues", requireAuth, validateVenue, async (req, res) => 
   }
 
   if (user.id === group.organizerId || member.status === "co-host") {
-    const venue = await Venue.create({
+    const newVenue = await Venue.create({
       groupId: groupId,
       address,
       city,
       state,
       lat,
       lng,
+    });
+
+    const venue = await Venue.findOne({
+      where:{ groupId },
+      attributes: ['id', 'groupId', 'address', 'city', 'state', 'lat', 'lng']
     });
     return res.json(venue);
   }else{
