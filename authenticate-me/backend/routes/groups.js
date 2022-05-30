@@ -279,14 +279,38 @@ router.put("/:groupId/members", requireAuth, async (req, res, next) => {
     },
   });
 
-  if (!group) {
-    const err = new Error("Group couldn't be found");
-    err.status = 404;
-    err.message = "Group couldn't be found";
-    return next(err);
-  }
 
-  if (member.status === "co-host") {
+  if (!group) {
+    res.status(404);
+    return res.json({
+      message: "Group could not be found",
+      statusCode: 404,
+    });
+  }
+  if(status === 'pending'){
+    res.status(404);
+    return res.json({
+        message: 'Cannot change a membership status to pending',
+        statusCode: 400
+    });
+  };
+
+  const membership = await Member.findOne({
+    where: {
+        userId: memberId,
+        groupId
+    }
+});
+
+if(!membership){
+    res.status(404);
+    return res.json({
+        message: 'Membership between the user and the group does not exist',
+        statusCode: 404
+    });
+};
+
+  if (user.id !== group.organizerId) {
     if (status === "co-host") {
       const err = new Error(
         "Current User must be the organizer to add a co-host"
@@ -305,7 +329,9 @@ router.put("/:groupId/members", requireAuth, async (req, res, next) => {
     err.message =
       "Current User must be the organizer or a co-host to make someone a member";
     return next(err);
-  }
+  };
+
+
 
   const updatedMember = await Member.findByPk(memberId);
   await updatedMember.update({ status });
