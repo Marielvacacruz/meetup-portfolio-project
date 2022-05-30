@@ -1,6 +1,6 @@
 const express = require("express");
 const { requireAuth, restoreUser } = require("../utils/auth");
-const { validateEvent, validateGroup } = require("../utils/validateAll");
+const { validateEvent, validateGroup, validateVenue } = require("../utils/validateAll");
 const {
   Group,
   Member,
@@ -129,8 +129,8 @@ router.post(
   }
 );
 
-//Create Venue for Group (NEED VALIDATION)
-router.post("/:groupId/venues", requireAuth, async (req, res) => {
+//Create Venue for Group
+router.post("/:groupId/venues", requireAuth, validateVenue, async (req, res) => {
   const { user } = req;
   const { address, city, state, lat, lng } = req.body;
 
@@ -166,7 +166,13 @@ router.post("/:groupId/venues", requireAuth, async (req, res) => {
       lng,
     });
     return res.json(venue);
-  }
+  }else{
+    res.status(403);
+    return res.json({
+      message: 'Not Authorized',
+      statusCode: 403
+    });
+  };
 });
 
 //Get all members of a Group Specified by it's Id
@@ -287,6 +293,7 @@ router.put("/:groupId/members", requireAuth, async (req, res, next) => {
       statusCode: 404,
     });
   }
+
   if(status === 'pending'){
     res.status(404);
     return res.json({
@@ -415,6 +422,8 @@ router.get("/:groupId", async (req, res) => {
 
   res.json(response);
 });
+
+
 
 //Get all Groups
 router.get("/", async (req, res) => {

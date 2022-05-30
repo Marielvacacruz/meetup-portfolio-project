@@ -40,11 +40,11 @@ module.exports = (sequelize, DataTypes) => {
     },
     lat: {
       allowNull: false,
-      type: DataTypes.INTEGER
+      type: DataTypes.DECIMAL
     },
     lng: {
       allowNull: false,
-      type: DataTypes.INTEGER
+      type: DataTypes.DECIMAL
     },
   }, {
     sequelize,

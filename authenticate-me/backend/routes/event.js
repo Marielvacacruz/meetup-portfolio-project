@@ -121,7 +121,7 @@ router.get('/:eventId', async(req, res) => {
             message: 'Event could not be found',
             statusCode: 404
             });
-        }; //error won't be thrown (sends object with null values due to sequelize)
+        }; 
 
         const response = {...event.toJSON(), images: imageurls}
 
@@ -132,7 +132,8 @@ router.get('/:eventId', async(req, res) => {
 });
 
 
-//Get all events
+
+// //Get all events
 router.get('/', async(req, res) => {
 
     const Events = await Event.findAll({
