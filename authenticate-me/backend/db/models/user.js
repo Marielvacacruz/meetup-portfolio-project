@@ -54,7 +54,7 @@ module.exports = (sequelize, DataTypes) => {
       );
 
       User.belongsToMany(
-        models.Event, { through: models.Attendee }
+        models.Event, {through: models.Attendee }
       );
 
       User.hasMany(
@@ -62,7 +62,7 @@ module.exports = (sequelize, DataTypes) => {
       );
 
       User.hasMany(
-        models.Attendee, { foreignKey: 'userId'}
+        models.Attendee, { as: 'Attendance',foreignKey: 'userId'}
       );
     }
   }
