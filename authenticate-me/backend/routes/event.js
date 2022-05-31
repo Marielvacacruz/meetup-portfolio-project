@@ -366,7 +366,7 @@ router.put('/:eventId', requireAuth, validateEvent, async(req, res) => {
         };
 });
 
-//Add an Image to an Event based on group id
+//Add an Image to an Event based on group id (THIS ROUTE NEEDS WORK, NOT CHECKING ATTENDEE)
 router.post('/:eventId/images', requireAuth, async(req, res) => {
   const { user } = req;
   let { eventId } = req.params;
@@ -383,8 +383,11 @@ router.post('/:eventId/images', requireAuth, async(req, res) => {
     });
   };
 
-  const attendee = Attendee.findByPk(user.id, {
-      where: {eventId: eventId}
+  const attendee = Attendee.findOne({
+      where: {
+          userId: user.id,
+          eventId: eventId
+        }
   });
 
   if(!attendee){
@@ -395,16 +398,22 @@ router.post('/:eventId/images', requireAuth, async(req, res) => {
     });
   };
 
-  const newImage = await Image.create({
-    eventId: eventId,
-    imageableType: 'Event',
-    url
-  });
+  if(attendee){
+    const newImage = await Image.create({
+        eventId: eventId,
+        imageableType: 'Event',
+        url
+      });
 
-  return res.json({
-    newImage
-  })
+      return res.json({
+        newImage
+      })
+
+  }
+
 });
+
+
 //Get details of event by it's id
 router.get('/:eventId', async(req, res) => {
     let { eventId } = req.params;
