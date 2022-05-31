@@ -45,8 +45,6 @@ router.get('/:eventId/attendees', restoreUser, async(req, res) => {
 
             });
 
-
-
             return res.json({Attendees: attendees.Users });
          } else {
                       const attendees = await Attendee.findAll({
