@@ -75,16 +75,30 @@ app.use((err, _req, _res, next) => {
 });
 
 //Error formatter
+// app.use((err, _req, res, _next) => {
+//     res.status(err.status || 500);
+//     console.log(err);
+//     res.json({
+//         // title: err.title || 'Server Error',
+//         message: err.message,
+//         statusCode: err.status,
+//         errors: err.errors,
+//         stack: isProduction ? null : err.stack
+//     });
+// });
+
+
 app.use((err, _req, res, _next) => {
-    res.status(err.status || 500);
-    console.log(err);
-    res.json({
-        // title: err.title || 'Server Error',
-        message: err.message,
-        statusCode: err.status,
-        errors: err.errors,
-        stack: isProduction ? null : err.stack
-    });
+  res.status(err.status || 500);
+  console.error(err);
+  const options = {};
+  if (!isProduction) options.stack = err.stack;
+  res.json({
+    message: err.message,
+    statusCode: res.statusCode,
+    errors: err.errors,
+    ...options,
+  });
 });
 
 module.exports = app;

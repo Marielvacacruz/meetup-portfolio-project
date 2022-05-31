@@ -6,6 +6,7 @@ const signupRouter = require('./signup');
 const groupsRouter = require('./groups');
 const eventRouter = require('./event');
 const venueRouter = require('./venues');
+const imagesRouter = require('./images');
 
 router.use('/login', loginRouter);
 router.use('/users', usersRouter);
@@ -13,6 +14,7 @@ router.use('/signup', signupRouter);
 router.use('/groups', groupsRouter);
 router.use('/events', eventRouter);
 router.use('/venues', venueRouter);
+router.use('/images', imagesRouter);
 
 
 

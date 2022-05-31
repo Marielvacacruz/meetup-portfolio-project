@@ -366,7 +366,7 @@ router.put('/:eventId', requireAuth, validateEvent, async(req, res) => {
         };
 });
 
-//Add an Image to an Event based on group id (THIS ROUTE NEEDS WORK, NOT CHECKING ATTENDEE)
+//Add an Image to an Event based on event id (THIS ROUTE NEEDS WORK, NOT CHECKING ATTENDEE)
 router.post('/:eventId/images', requireAuth, async(req, res) => {
   const { user } = req;
   let { eventId } = req.params;
@@ -386,7 +386,7 @@ router.post('/:eventId/images', requireAuth, async(req, res) => {
   const attendee = Attendee.findOne({
       where: {
           userId: user.id,
-          eventId: eventId
+          eventId
         }
   });
 
