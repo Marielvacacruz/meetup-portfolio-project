@@ -572,7 +572,7 @@ router.post('/:groupId/images', requireAuth, async(req, res) => {
   };
 
   const newImage = await Image.create({
-    imageableId: groupId,
+    groupId: groupId,
     imageableType: 'Group',
     url
   });

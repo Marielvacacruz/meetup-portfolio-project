@@ -366,6 +366,45 @@ router.put('/:eventId', requireAuth, validateEvent, async(req, res) => {
         };
 });
 
+//Add an Image to an Event based on group id
+router.post('/:eventId/images', requireAuth, async(req, res) => {
+  const { user } = req;
+  let { eventId } = req.params;
+    eventId = parseInt(eventId);
+  const { url } = req.body;
+
+  const event = await Event.findByPk(eventId);
+
+  if(!event){
+    res.status(404);
+    return res.json({
+      message: 'Event could not be found',
+      statusCode: 404
+    });
+  };
+
+  const attendee = Attendee.findByPk(user.id, {
+      where: {eventId: eventId}
+  });
+
+  if(!attendee){
+    res.status(403);
+    return res.json({
+      message: 'User not authorized',
+      statusCode: 403
+    });
+  };
+
+  const newImage = await Image.create({
+    eventId: eventId,
+    imageableType: 'Event',
+    url
+  });
+
+  return res.json({
+    newImage
+  })
+});
 //Get details of event by it's id
 router.get('/:eventId', async(req, res) => {
     let { eventId } = req.params;
