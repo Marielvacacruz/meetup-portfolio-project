@@ -8,103 +8,57 @@ const { Event, Group, Member, Image, Attendee, Venue, User, sequelize} = require
 
 const router = express.Router();
 
- //Get All Attendees of an Event specified by its id
-
- router.get("/:eventId/attendees", restoreUser, async (req, res, next) => {
+//Get All Attendees of an Event specified by its id
+router.get('/:eventId/attendees', restoreUser, async(req, res) => {
     const { user } = req;
-    const { eventId } = req.params;
+    let { eventId } = req.params;
+        eventId = parseInt(eventId);
 
-    const event = await Event.findByPk(eventId);
-    const member = await Member.findOne({
-      where: {
-        userId: user.id,
-        groupId: event.groupId
-      }
-    });
+        const events = await Event.findByPk(eventId);
 
-    if (!event) {
-      const err = new Error("Event couldn't be found");
-      err.status = 404;
-      err.message = "Event couldn't be found";
-      return next(err);
-    }
+        if(!events){
+            res.status(404);
+            return res.json({
+                message: 'Event Could Not Be Found',
+                statusCode: 404
+            });
+        };
 
-    if (!member) {
-      const err = new Error("Membership not found");
-      err.message = "Membership not found";
-      err.status = 404;
-      return next(err);
-    }
+        const group = await Group.findByPk(events.groupId, {
+            include: [
+                {
+                    model: Member,
+                    where: { userId: user.id}
+                }
+            ]
+        });
 
-    if (member.status === "host" || member.status === "co-host") {
+        if(user.id === group.organizerId || group.Member.status === 'co-host'){
+             const attendees = await Event.findByPk(eventId,{
+                include:
+                    {
+                        model: User,
+                        attributes: ['id', 'firstName', 'lastName', 'firstName' ],
+                        through: {attributes: ['status']}
+                    },
+                attributes: []
 
-      const user = await User.findAll({
-        include: {
-          model: Attendee,
-          as: 'Attendance',
-          where: {
-            eventId,
-          },
-          attributes: ['status']
-        }
-      })
-      res.json({ Attendees: user });
-
-    } else {
-      const attendees = await Attendee.findAll({
-        where: {
-          eventId: event.id,
-          status: ["member", "waitlist"]
-        }
-      });
-      res.json({ Attendees: attendees });
-    }
-  });
-
-// router.get('/:eventId/attendees', restoreUser, async(req, res) => {
-//     const { user } = req;
-//     let { eventId } = req.params;
-//         eventId = parseInt(eventId);
-
-//         const events = await Event.findByPk(eventId);
-
-//         if(!events){
-//             res.status(404);
-//             return res.json({
-//                 message: 'Event Could Not Be Found',
-//                 statusCode: 404
-//             });
-//         };
-
-//         const group = await Group.findByPk(events.groupId, {
-//             include: [
-//                 {
-//                     model: Member,
-//                     where: { userId: user.id}
-//                 }
-//             ]
-//         });
-
-//         if(user.id === group.organizerId || group.Member.status === 'co-host'){
-//              const attendees = await Event.findByPk(eventId,{
-//                 include:
-//                     {
-//                         model: User,
-//                         attributes: ['id', 'firstName', 'lastName', 'firstName' ],
-//                         through: {attributes: ['status']}
-//                     },
-//                 attributes: []
-
-//             });
+            });
 
 
 
-//             return res.json(attendees);
-//          }
-//          //else{
-//         // }
+            return res.json({Attendees: attendees.Users });
+         } else {
+                      const attendees = await Attendee.findAll({
+                        where: {
+                          eventId: events.id,
+                          status: ["member", "waitlist"]
+                        }
+                      });
+                      res.json({ Attendees: attendees });
+                    }
 
-// });
+});
 
 //Request to Attend and Event based on Event's id
 
