@@ -107,61 +107,122 @@ const router = express.Router();
 // });
 
 //Request to Attend and Event based on Event's id
-router.post('/:eventId/attendees', requireAuth, async(req,  res) => {
-    const { user } = req;
 
+router.post("/:eventId/attendees", requireAuth, async (req, res) => {
     let { eventId } = req.params;
-        eventId = parseInt(eventId);
-
-        const event = await Event.findByPk(eventId);
-
-        if(!event){
-            res.status(404);
-            return res.json({
-                message: 'Event Could Not Be Found',
-                statusCode: 404
-            });
-        };
-
-        const attendee = await Event.findOne({where: {userId:user.id, eventId}})
-
-        if(attendee){
-            if(attendee.status  === 'pending'){
-                res.status(400);
-                return res.json({
-                    message: 'Attendance has already been requested',
-                    statusCode: 400
-                });
-            };
-
-            if(attendee.status === 'attending'){
-                res.status(400);
-                return res.json({
-                     message: "User is already an attendee of the event",
-                    statusCode: 400
-                });
-            };
-
-            const member = await Group.findByPk(event.groupId, {
-                include: [{ model: Member, where: { userId: user.id } }]
-              });
-
-            if(member){
-                const attendance = await Attendee.create({
-                    eventId,
-                    userId: user.id,
-                    status: 'pending'
-                });
-
-            }
-            return res.json(attendance);
-
-        };
+    eventId = parseInt(eventId);
+    const { user } = req;
+    const event = await Event.findByPk(eventId);
 
 
+    if (!event) {
+      const error = new Error("Event not found");
+      error.status = 404;
+      throw error;
+    }
+
+    const pendingStatus = await Attendee.findOne({
+      where: {
+        eventId,
+        userId: user.id,
+        status: "pending"
+      }
+    });
+
+    if (pendingStatus) {
+      const error = new Error("Attendance has already been requested");
+      error.status = 400;
+      throw error;
+    }
+
+    const statusAccepted = await Attendee.findOne({
+      where: {
+        eventId,
+        userId: user.id,
+        status: "member"
+      }
+    });
+
+    if (statusAccepted) {
+      const error = new Error("User is already an attendee of the event");
+      error.status = 400;
+      throw error;
+    }
+    const group = await Group.findByPk(event.groupId, {
+      include: [{ model: Member, where: { userId: user.id } }]
+    });
+    const member = group.Member;
+
+    if (group.Member.status === "member" || group.Member.status === "co-host") {
+      const attendance = await Attendee.create({
+        eventId,
+        userId: user.id,
+        status: "pending"
+      });
+      eventId = attendance.eventId;
+      let userId = attendance.userId;
+      let status = attendance.status;
+      return res.json({ eventId, userId, status });
+    }
+  });
+// router.post('/:eventId/attendees', requireAuth, async(req,  res) => {
+//     const { user } = req;
+
+//     let { eventId } = req.params;
+//         eventId = parseInt(eventId);
+
+//         const event = await Event.findByPk(eventId);
+
+//         if(!event){
+//             res.status(404);
+//             return res.json({
+//                 message: 'Event Could Not Be Found',
+//                 statusCode: 404
+//             });
+//         };
+
+//         const attendee = await Event.findByPk(eventId, {
+//             include:
+//                 {
+//                     model: Attendee,
+//                     where: {userId: user.id},
+//                 }
+
+//         });
+
+//         if(attendee){
+//             if(attendee.status  === 'pending'){
+//                 res.status(400);
+//                 return res.json({
+//                     message: 'Attendance has already been requested',
+//                     statusCode: 400
+//                 });
+//             };
+
+//             if(attendee.status === 'attending'){
+//                 res.status(400);
+//                 return res.json({
+//                      message: "User is already an attendee of the event",
+//                     statusCode: 400
+//                 });
+//             };
+//         };
+
+//         const member = await Group.findByPk(event.groupId, {
+//             include: [{ model: Member, where: { userId: user.id } }]
+//           });
+
+//         if(member){
+//             const attendance = await Attendee.create({
+//                 eventId: event.id,
+//                 userId: user.id,
+//                 status: 'pending'
+//             });
+//             return res.json(attendance);
+//         }
 
 
-});
+// });
 
 //Edit an Event specified by its id (test this route once merged)
 router.put('/:eventId', requireAuth, validateEvent, async(req, res) => {
